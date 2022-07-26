@@ -10,18 +10,16 @@ mutable struct QRegistre
         #nQuBits -> nombre de QuBits en el registre
         #Per a convertir a nombre complex un vector de 0s de tamany 2^N
         #Convertir a Matriu de nombres complexos
-        estat = zeros(ComplexF64, 2 .^ nQubits)
+        estat = zeros(ComplexF64, (1,2 .^ nQubits))
         estat[1] = 1
-        #Per a canviar el tamany del vector estat
-        estat = reshape(estat, (1, 2 .^ nQubits))
         #Per a crear un QRegistre, si no posarem aquest parametre unicamente ens crearia una matriu
         new(estat,nQubits)
     end
 
 end
 
-#EN ESTE CAS ket(1,2)  ES COM SI
-#ESTAGUEREM TREBALLANT SOBRE EL QUIBT 1, CREC QUE NI HAURA QUE CANVIAR TAME EL KET
+
+
 
 """DE MOMENT NO SERVIX"""
 

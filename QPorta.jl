@@ -6,16 +6,17 @@ using PyCall
 #Porta quántica, se utilitza per a poder manipular els QuBits
 mutable struct QPorta
     nom
-    simple
     matriu
+    mult
 
-    function QPorta(nom, matriu)
+    function QPorta(nom, matriu, mult=1)
         nom = nom
-        simple = true
-        new(nom, simple, matriu)
+        new(nom, matriu, mult)
     end
 
 end
+
+
 
 """DE MOMENT NO SERVIX"""
 #args... Poder afegir mes d'un valor
