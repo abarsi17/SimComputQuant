@@ -35,7 +35,7 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubit)
 
     if c.registre.nQubits == 2
         if qubit == 2
-            m = porta.mult * reshape(c.registre.estat, (2,2)) * porta.matriu
+            m = reshape(c.registre.estat, (2,2)) * porta.matriu * porta.mult
             c.registre.estat = reshape(m, (1,4))
 
         elseif qubit == 1
@@ -43,7 +43,7 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubit)
             c.registre.estat = reshape(m, (1,4))
         end
     elseif c.registre.nQubits == 1
-        c.registre.estat = c.registre.estat * porta.matriu
+        c.registre.estat = c.registre.estat * porta.matriu * porta.mult
     end
 
 end
