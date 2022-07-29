@@ -1,4 +1,4 @@
-#Instruccions per a executar la llibreria 'cq' del Simulador del Computador Quántica 
+#Instruccions per a executar la llibreria 'scq' del Simulador del Computador Quántica 
 
 Executar julia desde la llinea de comands o un notebook com pot ser jupyter
 Una vegada dins 
