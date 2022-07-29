@@ -1,5 +1,5 @@
-
-using PyCall
+export
+    QRegistre
 
 #On se almacenen els QuBits
 mutable struct QRegistre
@@ -15,8 +15,13 @@ mutable struct QRegistre
         #Per a crear un QRegistre, si no posarem aquest parametre unicamente ens crearia una matriu
         new(estat,nQubits)
     end
-
 end
+
+#Eixida per pantalla
+function Base.show(io::IO, reg::QRegistre)
+    println(io, "Estat de la ixida\n\t", reg.estat)
+end
+
 
 
 

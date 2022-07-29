@@ -1,0 +1,26 @@
+#Instruccions per a executar la llibreria 'cq' del Simulador del Computador Quántica 
+
+Executar julia desde la llinea de comands o un notebook com pot ser jupyter
+Una vegada dins 
+    include("scq.jl)
+    
+    
+Crear un registre de un nombre de Qubits, de moment soles he provat en 1 o 2
+    reg = scq.QRegistre(2)
+
+Crear un circuit quantic i li pasem el registre creat
+    c = scq.QCircuit(reg)
+
+Aplicar una porta sobre el qubit que volem, li pasem el circuit, la porta i el qubit que va ser alterat
+    #La porta Hadamard sobre el Qubit[1]
+        scq.aplicarPorta(c, scq.H(), 1)
+    #La porta Not sobre el Qubit[2]
+        scq.aplicarPorta(c, scq.X(), 2)
+
+Mostrar el circuit
+    c
+
+Mostrar el estat del vector després de haverlo alterat
+    reg
+    
+ 

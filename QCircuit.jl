@@ -1,18 +1,11 @@
-#Conjunt de operacions per realitzar operacions sobre un QRegistre
-
 export
     QCircuit,
     aplicarPorta
 
-using PyCall
-
-include("QPorta.jl")
-include("QRegistre.jl")
-include("Braket.jl")
-
 #Variable general per a ficar la key del diccionari
 const valorsKey = ["qubit[1]", "qubit[2]", "qubit[3]"]
 
+#Conjunt de operacions per realitzar operacions sobre un QRegistre
 mutable struct QCircuit
     qubit
     registre
@@ -46,31 +39,16 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubit)
         c.registre.estat = c.registre.estat * porta.matriu * porta.mult
     end
 
+    c.registre
 end
 
-#Porta Hadamard
-function H()
-    matriu = ones(ComplexF64, (2,2))
-    matriu[2,2] = -1
-    mult = 1/sqrt(2)
-    h = QPorta("H", matriu, mult)
-    return h
-end
-
-#Porta NOT
-function X()
-    matriu = [0 1; 1 0]
-    x = QPorta("X", matriu)
-    return x
-end
-
-"""DE MOMENT NO SERVIX"""
-
-function Hmat(n)
-    h = ones(ComplexF64, (2,2))
-    h[2,2] = -1
-    if n > 1
-        h = kron(h,Hmat(n-1))
+#Eixida per pantalla
+function Base.show(io::IO, c::QCircuit)
+    for i in 1:c.registre.nQubits
+        x = "- "
+        for valors in c.qubit[valorsKey[i]]
+            x *= valors * " - "
+        end
+        println(io, valorsKey[i], " -> ", x)
     end
-    return h
 end

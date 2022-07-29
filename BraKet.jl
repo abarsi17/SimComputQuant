@@ -3,16 +3,12 @@ export
     bra,
     braket
 
-using PyCall
-using LinearAlgebra
-using SparseArrays
-
 #Vector de estat en forma de columna |·>
 function ket(index :: Int, tamany :: Int)
     @assert tamany > 0 "El tamany del vector te que ser positiu"
     @assert 1 <= index <= tamany "El index te que ser positiu i no mes gran que el tamany del vector"
     #ret = spzeros(Int64, tamany) #resultat [index] = valor
-    ret = zeros(Int64, tamany)
+    ret = zeros(Int64, (1,tamany))
     ret[index] = 1
     ret
 end
