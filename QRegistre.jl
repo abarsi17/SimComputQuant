@@ -17,12 +17,21 @@ mutable struct QRegistre
     end
 end
 
-#Eixida per pantalla
-function Base.show(io::IO, reg::QRegistre)
-    println(io, "Estat de la ixida\n\t", reg.estat)
+#Funció que asegura que es cumplix la propietat de que |a|^2 + |b|^2 = 1
+function ortonormal(estat)
+    sum = 0
+    for i in 1:length(estat)
+        sum += abs(estat[i])^2
+    end
+
+    sum = sqrt(sum)
+
+    if sum == 1
+        println("Es conjunt ortonormal")
+    else
+        println("No es un conjunt ortonormal")
+    end
 end
-
-
 
 
 

@@ -41,14 +41,3 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubit)
 
     c.registre
 end
-
-#Eixida per pantalla
-function Base.show(io::IO, c::QCircuit)
-    for i in 1:c.registre.nQubits
-        x = "- "
-        for valors in c.qubit[valorsKey[i]]
-            x *= valors * " - "
-        end
-        println(io, valorsKey[i], " -> ", x)
-    end
-end

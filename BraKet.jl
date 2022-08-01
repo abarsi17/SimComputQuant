@@ -13,9 +13,19 @@ function ket(index :: Int, tamany :: Int)
     ret
 end
 
+function ket(estat)
+    estat = reshape(estat, 1, length(estat))
+    estat
+end
+
 #Vector de estat en forma de fila conjugada <·|
 function bra(index :: Int, tamany :: Int)
     ket(index, tamany)'
+end
+
+function bra(estat)
+    estat = reshape(estat, length(estat), 1)
+    estat
 end
 
 #Permitix treballar sobre vector en forma de fila conjugada i en forma de columna
