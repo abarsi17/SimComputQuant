@@ -9,11 +9,10 @@ export
 mutable struct QPorta
     nom
     matriu
-    mult
 
-    function QPorta(nom, matriu, mult=1)
+    function QPorta(nom, matriu)
         nom = nom
-        new(nom, matriu, mult)
+        new(nom, matriu)
     end
 
 end
@@ -23,7 +22,8 @@ function H()
     matriu = ones(ComplexF64, (2,2))
     matriu[2,2] = -1
     mult = 1/sqrt(2)
-    h = QPorta("H", matriu, mult)
+    matriu *= mult
+    h = QPorta("H", matriu)
     return h
 end
 
@@ -48,7 +48,22 @@ function Z()
     return z
 end
 
+#Matriu identitat
+function I()
+    matriu = [[1 0; 0 1]]
+    i = QPorta("I", matriu)
+    return i
+end
 
+function ajuda()
+    println("Aquest es un llista de les portes quantiques disponibles:")
+    println("\t- Pauli X")
+    println("\t- Pauli Y")
+    println("\t- Pauli Z")
+    println("\t- Hadamard")
+    println("\t- Identitat")
+    println("\t- CNOT")
+end
 
 """
 #Porta quántica CNOT, treballa en dos qubits
@@ -64,38 +79,3 @@ function CX(reg::QRegistre)
     end
 end
 """
-
-
-"""DE MOMENT NO SERVIX"""
-
-function Hmat(n)
-    h = ones(ComplexF64, (2,2))
-    h[2,2] = -1
-    if n > 1
-        h = kron(h,Hmat(n-1))
-    end
-    return h
-end
-
-#args... Poder afegir mes d'un valor
-function afegirLinia(qp::QPorta, args)
-    push!(qp.linies, args)
-    if qp.simple > 1 && size(args,1) > 1 || size(qp.linies,1) > 1
-        qp.simple = false
-    end
-    #El producte de Kronecker
-    aux = kron(1, qp.m)
-    #El producte de dos Arrays
-    qp.m = dot(aux, qp.m)
-end
-
-
-function setMult(qp::QPorta, mult)
-    qp.m *= mult/qp.mult
-    qp.mult = mult
-end
-
-function addMult(qp::QPorta, mult)
-    qp.m *= mult
-    qp.mult *= mult
-end
