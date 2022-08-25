@@ -24,20 +24,26 @@ end
 function aplicarPorta(c::QCircuit, porta::QPorta, qubit)
     @assert 0 < qubit <= c.registre.nQubits "El qubit passat esta fora del rang"
 
-    push!(c.qubit[valorsKey[qubit]], porta.nom)
-
-    if c.registre.nQubits == 2
-        if qubit == 2
-            m = reshape(c.registre.estat, (2,2)) * porta.matriu * porta.mult
-            c.registre.estat = reshape(m, (1,4))
-
-        elseif qubit == 1
-            m = porta.mult * porta.matriu * reshape(c.registre.estat, (2,2))
-            c.registre.estat = reshape(m, (1,4))
+    #Per a un qubit
+    if c.registre.nQubits == 1
+        c.registre.estat = c.registre.estat * porta.matriu
+    #Per a n qubits, on n > 1
+    else
+        c.registre.registre[qubit].estat = porta.matriu * c.registre.registre[qubit].estat
+        #aux = c.registre.registre[1].estat
+        for i in 1:c.registre.nQubits-1
+            c.registre.estat = kron(c.registre.registre[i+1].estat, c.registre.registre[i].estat)
         end
-    elseif c.registre.nQubits == 1
-        c.registre.estat = c.registre.estat * porta.matriu * porta.mult
+    end
+    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
+    j = 1
+    for valor in c.registre.estat
+        c.registre.estat[j] = round(valor, digits = 4)
+        j += 1
     end
 
-    c.registre
+    c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
+    push!(c.qubit[valorsKey[qubit]], porta.nom)
+
+    c.registre.estat
 end

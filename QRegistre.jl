@@ -1,19 +1,34 @@
 export
-    QRegistre
+    QRegistre,
+    ortonormal
+
+mutable struct Qubit
+    estat
+
+    function Qubit()
+        estat = zeros(ComplexF64, 2)
+        estat[1] = 1
+        new(estat)
+    end
+end
 
 #On se almacenen els QuBits
 mutable struct QRegistre
-    estat
+    registre
     nQubits
+    estat
     #Constructor del registre de QuBits amb nombres complexos
     function QRegistre(nQubits)
-        #nQuBits -> nombre de QuBits en el registre
-        #Per a convertir a nombre complex un vector de 0s de tamany 2^N
-        #Convertir a Matriu de nombres complexos
-        estat = zeros(ComplexF64, (1,2 .^ nQubits))
-        estat[1] = 1
-        #Per a crear un QRegistre, si no posarem aquest parametre unicamente ens crearia una matriu
-        new(estat,nQubits)
+        registre = []
+        for i in 1:nQubits
+            push!(registre, Qubit())
+        end
+        estat = registre[1].estat
+        for i in 2:nQubits
+            estat = kron(registre[i].estat, estat)
+        end
+        estat = reshape(estat, 1, 2^nQubits)
+        new(registre, nQubits, estat)
     end
 end
 
@@ -25,6 +40,7 @@ function ortonormal(estat)
     end
 
     sum = sqrt(sum)
+    sum = round(sum, digits = 4)
 
     if sum == 1
         println("Es conjunt ortonormal")
