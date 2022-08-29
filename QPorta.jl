@@ -5,6 +5,8 @@ export
     Y,
     Z
 
+arrayPortes = []
+
 #Porta quántica, se utilitza per a poder manipular els QuBits
 mutable struct QPorta
     nom
@@ -24,6 +26,7 @@ function H()
     mult = 1/sqrt(2)
     matriu *= mult
     h = QPorta("H", matriu)
+    push!(arrayPortes, h)
     return h
 end
 
@@ -31,6 +34,7 @@ end
 function X()
     matriu = [0 1; 1 0]
     x = QPorta("X", matriu)
+    push!(arrayPortes, x)
     return x
 end
 
@@ -38,6 +42,7 @@ end
 function Y()
     matriu = [0 -im; im 0]
     y = QPorta("Y", matriu)
+    push!(arrayPortes, y)
     return y
 end
 
@@ -45,6 +50,7 @@ end
 function Z()
     matriu = [1 0; 0 -1]
     z = QPorta("Z", matriu)
+    push!(arrayPortes, z)
     return z
 end
 
@@ -55,6 +61,7 @@ function I(n=2)
         matriu[i,i] = 1
     end
     i = QPorta("I", matriu)
+    push!(arrayPortes, i)
     return i
 end
 
@@ -65,19 +72,21 @@ function CX()
     matriu[2,2] = 1
     matriu[3,4] = 1
     matriu[4,3] = 1"""
-    matriu = X().matriu
+    matriu = [0 1;1 0]
     cx = QPorta("⊕", matriu)
+    push!(arrayPortes, cx)
     return cx
 end
 
 #Porta quàntica SWAP, treball amb dos qubits
 function SWAP()
     matriu = zeros(4,4)
-    """matriu[1,1] = 1
+    matriu[1,1] = 1
     matriu[2,3] = 1
     matriu[3,2] = 1
-    matriu[4,4] = 1"""
+    matriu[4,4] = 1
     swap = QPorta("✕", matriu)
+    push!(arrayPortes, swap)
     return swap
 end
 
@@ -90,8 +99,9 @@ function T()
     matriu[7,8] = 1
     matriu[8,7] = 1
     #ⓧ"""
-    matriu = X().matriu
+    matriu = [0 1;1 0]
     t = QPorta("⊗", matriu)
+    push!(arrayPortes, t)
     return t
 end
 
