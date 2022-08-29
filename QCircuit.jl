@@ -57,7 +57,6 @@ end
 function aplicarPorta(c::QCircuit, porta::QPorta, qubits...)
     @assert 0 < qubits[1] <= c.registre.nQubits && 0 < qubits[2] <= c.registre.nQubits "El qubit passat esta fora del rang"
     @assert (qubits[2] - qubits[1]) == 1 "La asignació de qubits te que ser consecutiva i de menor a major"
-
     #Especialment per a la porta Toffoli, ja que utilitza tres qubits
     if length(qubits) == 3
         @assert (qubits[3] - qubits[2]) == 1 && 0 < qubits[3] <= c.registre.nQubits "La asignació de qubits te que ser consecutiva i de menor a major o esta fora de rang"
@@ -128,6 +127,34 @@ function mesurar(c::QCircuit, qubit::Int)
     end
     c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
     dibuixarCircuit(c, m, qubit)
+    c
+end
+
+"""FALTA REMATAR PER A QUE QUANT TINGA QUE BORRAR UNA PORTA DE MES D'UN QUBIT MODIFIQUE EL ESTAT CORRECTAMENT
+    LES PORTES D'UN QUBIT LES BORRA PERFECTAMENT"""
+#Eliminar l'ulitma porta introduida en el qubit assignat
+function eliminar(c::QCircuit, qubit)
+    comprovar = 0
+    iter = 1
+    porta = 0
+    while comprovar == 0
+        if c.qubit[string("qubit[",1,"]")][length(c.qubit["qubit[1]"])] == arrayPortes[iter].nom
+            porta = arrayPortes[iter]
+            comprovar = 1
+        end
+        iter += 1
+    end
+    aux = porta.matriu * c.registre.registre[qubit].estat
+    for i in 2:c.registre.nQubits
+        aux = kron(c.registre.registre[i].estat, aux)
+    end
+    for j in 1:length(aux)
+        aux[j]=round(aux[j], digits=4)
+    end
+    for k in 1:c.registre.nQubits
+        pop!(c.qubit[string("qubit[",k,"]")])
+    end
+    c.registre.estat = aux
     c
 end
 
