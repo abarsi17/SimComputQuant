@@ -48,34 +48,64 @@ function Z()
     return z
 end
 
-#Matriu identitat
-function I()
-    matriu = [[1 0; 0 1]]
+#Matriu identitat de tamany n x n
+function I(n=2)
+    matriu = zeros(n,n)
+    for i in 1:n
+        matriu[i,i] = 1
+    end
     i = QPorta("I", matriu)
     return i
 end
 
-function ajuda()
-    println("Aquest es un llista de les portes quantiques disponibles:")
-    println("\t- Pauli X")
-    println("\t- Pauli Y")
-    println("\t- Pauli Z")
-    println("\t- Hadamard")
-    println("\t- Identitat")
-    println("\t- CNOT")
+#Porta quántica CNOT, treballa en dos qubits {x, y}
+function CX()
+    """matriu = zeros(4,4)
+    matriu[1,1] = 1
+    matriu[2,2] = 1
+    matriu[3,4] = 1
+    matriu[4,3] = 1"""
+    matriu = X().matriu
+    cx = QPorta("⊕", matriu)
+    return cx
 end
 
-"""
-#Porta quántica CNOT, treballa en dos qubits
-function CX(reg::QRegistre)
-    @assert 1 < reg.nQubits < 4 "Te que estar compres en el rang"
-    index = 1
-    m = zeros(Int, (1, 2^reg.nQubits))
-    for q in reg.estat
-        if q != 0
-            m[index] = 1
-        end
-        index += 1
-    end
+#Porta quàntica SWAP, treball amb dos qubits
+function SWAP()
+    matriu = zeros(4,4)
+    """matriu[1,1] = 1
+    matriu[2,3] = 1
+    matriu[3,2] = 1
+    matriu[4,4] = 1"""
+    swap = QPorta("✕", matriu)
+    return swap
 end
-"""
+
+#Porta quàntica Toffoli, treballa amb tres qubits
+function T()
+    """matriu = zeros(8,8)
+    for i in 1:6
+        matriu[i,i] = 1
+    end
+    matriu[7,8] = 1
+    matriu[8,7] = 1
+    #ⓧ"""
+    matriu = X().matriu
+    t = QPorta("⊗", matriu)
+    return t
+end
+
+#Funcio ajuda per a saber les portes quàntiques
+function ajuda()
+    println("Aquest es un llista de les portes quantiques disponibles")
+    println("Aquestes comportes quàntiques treballen amb 1 qubit:")
+    println("\t- Pauli X -> X()")
+    println("\t- Pauli Y -> Y()")
+    println("\t- Pauli Z -> Z()")
+    println("\t- Hadamard -> H()")
+    println("\t- Identitat -> I(n)")
+    println("Aquestes comportes quàntiques treballen amb 2 o mes qubits:")
+    println("\t- CNOT -> CX()")
+    println("\t- SWAP -> SWAP()")
+    println("\t- Toffoli -> T()")
+end

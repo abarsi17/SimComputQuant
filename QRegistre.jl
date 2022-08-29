@@ -2,6 +2,7 @@ export
     QRegistre,
     ortonormal
 
+#Estructura del Qubit
 mutable struct Qubit
     estat
 
@@ -46,6 +47,24 @@ function ortonormal(estat)
         println("Es conjunt ortonormal")
     else
         println("No es un conjunt ortonormal")
+    end
+end
+
+#Per a vore tots els valors del registre. Ja que quant ix per pantalla es simplifica amb ...
+function voreCompleta(reg::QRegistre, opcio::Int=2)
+    println("Estat de la ixida")
+    #Opcio 1 en forma de fila
+    if opcio == 1
+        for valor in reg.estat
+            print(valor," ")
+        end
+    #Opcio 2 en forma de columna
+    elseif opcio == 2
+        for valor in reg.estat
+            println(valor)
+        end
+    else
+        println("No es contempla aquesta opcio")
     end
 end
 

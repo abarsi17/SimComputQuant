@@ -1,12 +1,12 @@
-#Instruccions per a executar la llibreria 'scq' del Simulador del Computador Quántica 
+#Instruccions per a executar la llibreria 'scq' del Simulador del Computador Quántica
 
-Executar julia desde la llinea de comands o un notebook com pot ser jupyter
-Una vegada dins 
+Executar julia desde la llinea de comands o un notebook com pot ser jupyter (jupyter notebook)
+Una vegada dins
     include("scq.jl)
-    
-    
-Crear un registre de un nombre de Qubits, de moment soles he provat en 1 o 2
-    reg = scq.QRegistre(2)
+
+
+Crear un registre de un nombre de Qubits
+    reg = scq.QRegistre(4)
 
 Crear un circuit quantic i li pasem el registre creat
     c = scq.QCircuit(reg)
@@ -16,11 +16,15 @@ Aplicar una porta sobre el qubit que volem, li pasem el circuit, la porta i el q
         scq.aplicarPorta(c, scq.H(), 1)
     #La porta Not sobre el Qubit[2]
         scq.aplicarPorta(c, scq.X(), 2)
+    #La porta CNOT sobre els qubits{2,3}
+        scq.aplicarPorta(c, scq.CX(), 2,3)
+    #La porta Toffoli sobre els qubits{2,3,4}
+        scq.aplicarPorta(c, scq.T(), 2,3,4)
 
-Mostrar el circuit
+Mostrar el circuit (encara que quant apliquem una porta ja ens el mostra)
     c
 
 Mostrar el estat del vector després de haverlo alterat
     reg
-    
- 
+O també es pot mostrar tot el estat del vector utilitzant aquesta funció, siguent opció 1 en forma de fila i opció 2 (per defecte) en manera de columna
+    scq.voreCompleta(reg, opcio)
