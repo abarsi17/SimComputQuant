@@ -94,9 +94,40 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubits...)
             end
         end
     end
+    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
+    j = 1
+    for valor in c.registre.estat
+        c.registre.estat[j] = round(valor, digits = 4)
+        j += 1
+    end
 
     c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
     dibuixarCircuit(c, porta, qubits)
+    c
+end
+
+function mesurar(c::QCircuit, qubit::Int)
+    @assert 0 < qubit <= c.registre.nQubits "El qubit passat esta fora del rang"
+
+    if c.registre.registre[qubit].estat != [1;0] && c.registre.registre[qubit].estat != [0;1]
+        estat = zeros(ComplexF64, 2)
+        estat[2] = 1
+        c.registre.registre[qubit].estat = estat
+        m = QPorta("M",[])
+        aux = c.registre.registre[1].estat
+        for i in 2:c.registre.nQubits
+            aux = kron(c.registre.registre[i].estat, aux)
+        end
+        c.registre.estat = aux
+    end
+    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
+    j = 1
+    for valor in c.registre.estat
+        c.registre.estat[j] = round(valor, digits = 4)
+        j += 1
+    end
+    c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
+    dibuixarCircuit(c, m, qubit)
     c
 end
 
