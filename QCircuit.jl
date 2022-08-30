@@ -33,20 +33,9 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubit)
     #Per a n qubits, on n > 1
     else
         c.registre.registre[qubit].estat = porta.matriu * c.registre.registre[qubit].estat
-        aux = c.registre.registre[1].estat
-        for i in 2:c.registre.nQubits
-            aux = kron(c.registre.registre[i].estat, aux)
-        end
-        c.registre.estat = aux
-    end
-    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
-    j = 1
-    for valor in c.registre.estat
-        c.registre.estat[j] = round(valor, digits = 4)
-        j += 1
+        calcRegistre(c)
     end
 
-    c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
     dibuixarCircuit(c, porta, qubit)
     c.registre.estat
 end
@@ -61,46 +50,27 @@ function aplicarPorta(c::QCircuit, porta::QPorta, qubits...)
     if length(qubits) == 3
         @assert (qubits[3] - qubits[2]) == 1 && 0 < qubits[3] <= c.registre.nQubits "La asignació de qubits te que ser consecutiva i de menor a major o esta fora de rang"
     end
-    #Comprobar que el primer o el segon qubit es diferent de |0>
+    #Comprobar que el primer o el segon qubit es diferent de |0> i que la porta es la SWAP
     if (c.registre.registre[qubits[1]].estat != [1;0] || c.registre.registre[qubits[2]].estat != [1;0]) && porta.nom == "✕"
+        #El que fem es almacenar el valor del primer estat en una variable auxiliar, per a despres poder canviar els valors d'un estat en un altre
         aux = c.registre.registre[qubits[1]].estat
         c.registre.registre[qubits[1]].estat = c.registre.registre[qubits[2]].estat
         c.registre.registre[qubits[2]].estat = aux
-        aux1 = c.registre.registre[1].estat
-        for i in 2:c.registre.nQubits
-            aux1 = kron(c.registre.registre[i].estat, aux1)
-        end
-        c.registre.estat = aux1
+        calcRegistre(c)
 
     #Comprobar que el primer qubit es diferent de |0>
     elseif c.registre.registre[qubits[1]].estat != [1;0]
         if porta.nom == "⊕"
             c.registre.registre[qubits[2]].estat = porta.matriu * c.registre.registre[qubits[2]].estat
-            aux = c.registre.registre[1].estat
-            for i in 2:c.registre.nQubits
-                aux = kron(c.registre.registre[i].estat, aux)
-            end
-            c.registre.estat = aux
+            calcRegistre(c)
         elseif porta.nom == "⊗"
-            #Comprobar que el segon qubit es diferent de |0>
+            #Comprobar que el segon qubit es diferent de |0>, per a la porta Toffoli
             if c.registre.registre[qubits[2]].estat != [1;0]
                 c.registre.registre[qubits[3]].estat = porta.matriu * c.registre.registre[qubits[3]].estat
-                aux = c.registre.registre[1].estat
-                for i in 2:c.registre.nQubits
-                    aux = kron(c.registre.registre[i].estat, aux)
-                end
-                c.registre.estat = aux
+                calcRegistre(c)
             end
         end
     end
-    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
-    j = 1
-    for valor in c.registre.estat
-        c.registre.estat[j] = round(valor, digits = 4)
-        j += 1
-    end
-
-    c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
     dibuixarCircuit(c, porta, qubits)
     c
 end
@@ -113,25 +83,15 @@ function mesurar(c::QCircuit, qubit::Int)
         estat[2] = 1
         c.registre.registre[qubit].estat = estat
         m = QPorta("M",[])
-        aux = c.registre.registre[1].estat
-        for i in 2:c.registre.nQubits
-            aux = kron(c.registre.registre[i].estat, aux)
-        end
-        c.registre.estat = aux
+        calcRegistre(c)
     end
-    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
-    j = 1
-    for valor in c.registre.estat
-        c.registre.estat[j] = round(valor, digits = 4)
-        j += 1
-    end
-    c.registre.estat = reshape(c.registre.estat, 1, 2^c.registre.nQubits)
     dibuixarCircuit(c, m, qubit)
     c
 end
 
 """FALTA REMATAR PER A QUE QUANT TINGA QUE BORRAR UNA PORTA DE MES D'UN QUBIT MODIFIQUE EL ESTAT CORRECTAMENT
-    LES PORTES D'UN QUBIT LES BORRA PERFECTAMENT"""
+    LES PORTES D'UN QUBIT LES BORRA PERFECTAMENT
+    siguent A una matriu A*inv(A) = inv(A)*A = I """
 #Eliminar l'ulitma porta introduida en el qubit assignat
 function eliminar(c::QCircuit, qubit)
     comprovar = 0
@@ -144,18 +104,25 @@ function eliminar(c::QCircuit, qubit)
         end
         iter += 1
     end
-    aux = porta.matriu * c.registre.registre[qubit].estat
-    for i in 2:c.registre.nQubits
-        aux = kron(c.registre.registre[i].estat, aux)
-    end
-    for j in 1:length(aux)
-        aux[j]=round(aux[j], digits=4)
-    end
+    c.registre.registre[qubit].estat = inv(porta.matriu) * c.registre.registre[qubit].estat
+    calcRegistre(c)
     for k in 1:c.registre.nQubits
         pop!(c.qubit[string("qubit[",k,"]")])
     end
-    c.registre.estat = aux
     c
+end
+
+#Per a simplificar funcions, el que fa es calcular el registre una vegada s'aplica o s'elimina una porta del circuit
+function calcRegistre(c::QCircuit)
+    aux = c.registre.registre[1].estat
+    for i in 2:c.registre.nQubits
+        aux = kron(c.registre.registre[i].estat, aux)
+    end
+    #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
+    for j in 1:length(aux)
+        aux[j]=round(aux[j], digits=4)
+    end
+    c.registre.estat = aux
 end
 
 #Per a dibuixar el circuit.
