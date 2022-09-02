@@ -45,11 +45,7 @@ end
 #aplicarPorta(c, scq.T(), 2, 3, 4)
 function aplicarPorta(c::QCircuit, porta::QPorta, qubits...)
     @assert 0 < qubits[1] <= c.registre.nQubits && 0 < qubits[2] <= c.registre.nQubits "El qubit passat esta fora del rang"
-    @assert (qubits[2] - qubits[1]) == 1 "La asignació de qubits te que ser consecutiva i de menor a major"
-    #Especialment per a la porta Toffoli, ja que utilitza tres qubits
-    if length(qubits) == 3
-        @assert (qubits[3] - qubits[2]) == 1 && 0 < qubits[3] <= c.registre.nQubits "La asignació de qubits te que ser consecutiva i de menor a major o esta fora de rang"
-    end
+    @assert qubits[1] < qubits[2] "El orden te que ser ascendent"
     #Comprobar que el primer o el segon qubit es diferent de |0> i que la porta es la SWAP
     if (c.registre.registre[qubits[1]].estat != [1;0] || c.registre.registre[qubits[2]].estat != [1;0]) && porta.nom == "✕"
         #El que fem es almacenar el valor del primer estat en una variable auxiliar, per a despres poder canviar els valors d'un estat en un altre
@@ -128,17 +124,16 @@ end
 #Per a dibuixar el circuit.
 # dibuixarCircuit(c, CX, [1,2])
 function dibuixarCircuit(c::QCircuit, porta::QPorta, qubits)
-    qubitAux = 0
     #Portes de multiples qubits
     #CNOT
     if porta.nom == "⊕"
         for num in 1:c.registre.nQubits
             if num == qubits[1]
                 push!(c.qubit[valorsKey[num]], "•")
-                qubitAux = 1
-            elseif qubitAux == 1
+            elseif num == qubits[2]
                 push!(c.qubit[valorsKey[num]], porta.nom)
-                qubitAux = 0
+            elseif num > qubits[1] && num < qubits[2]
+                push!(c.qubit[valorsKey[num]], " ")
             else
                 push!(c.qubit[valorsKey[num]], "-")
             end
@@ -148,13 +143,12 @@ function dibuixarCircuit(c::QCircuit, porta::QPorta, qubits)
         for num in 1:c.registre.nQubits
             if num == qubits[1]
                 push!(c.qubit[valorsKey[num]], "•")
-                qubitAux = 1
-            elseif qubitAux == 1
+            elseif num == qubits[2]
                 push!(c.qubit[valorsKey[num]], "•")
-                qubitAux = 2
-            elseif qubitAux == 2
+            elseif num == qubits[3]
                 push!(c.qubit[valorsKey[num]], porta.nom)
-                qubitAux = 0
+            elseif num > qubits[1] && num < qubits[2]
+                push!(c.qubit[valorsKey[num]], " ")
             else
                 push!(c.qubit[valorsKey[num]], "-")
             end
@@ -164,10 +158,10 @@ function dibuixarCircuit(c::QCircuit, porta::QPorta, qubits)
         for num in 1:c.registre.nQubits
             if num == qubits[1]
                 push!(c.qubit[valorsKey[num]], porta.nom)
-                qubitAux = 1
-            elseif qubitAux == 1
+            elseif num == qubits[2]
                 push!(c.qubit[valorsKey[num]], porta.nom)
-                qubitAux = 0
+            elseif num > qubits[1] && num < qubits[2]
+                push!(c.qubit[valorsKey[num]], " ")
             else
                 push!(c.qubit[valorsKey[num]], "-")
             end

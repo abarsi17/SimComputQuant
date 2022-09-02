@@ -52,11 +52,12 @@ end
 
 #Per a vore tots els valors del registre. Ja que quant ix per pantalla es simplifica amb ...
 function voreCompleta(reg::QRegistre, opcio::Int=2)
-    println("Estat de la ixida")
+    println("Estat de la eixida")
     #Opcio 1 en forma de fila
     if opcio == 1
+        print("\t")
         for valor in reg.estat
-            print("\t",valor," ")
+            print(valor, " ")
         end
     #Opcio 2 en forma de columna
     elseif opcio == 2

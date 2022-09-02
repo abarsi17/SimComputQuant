@@ -105,8 +105,8 @@ function T()
     return t
 end
 
-#Funcio ajuda per a saber les portes quàntiques
-function ajuda()
+#Funcio per a saber les portes quàntiques disponibles
+function voreInfoPortes()
     println("Aquest es un llista de les portes quantiques disponibles")
     println("Aquestes comportes quàntiques treballen amb 1 qubit:")
     println("\t- Pauli X -> X()")

@@ -1,10 +1,6 @@
 #Simulador d'un Computador Quantic
 module scq
 
-    using PyCall
-    using LinearAlgebra
-    using SparseArrays
-
     include("QRegistre.jl")
     include("QPorta.jl")
     include("Braket.jl")
@@ -16,7 +12,7 @@ module scq
 
     #Eixida per pantalla del registre quantic
     function Base.show(io::IO, reg::QRegistre)
-        println(io, "Estat de la ixida\n\t", reg.estat)
+        println(io, "Estat de la eixida\n\t", reg.estat)
     end
 
     #Dibuixar per pantalla del circuit quantic
