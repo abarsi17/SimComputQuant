@@ -80,26 +80,30 @@ function mesurar(c::QCircuit, qubit::Int)
         c.registre.registre[qubit].estat = estat
         m = QPorta("M",[])
         calcRegistre(c)
+    else
+        m = QPorta("M",[])
     end
     dibuixarCircuit(c, m, qubit)
     c
 end
 
-"""FALTA REMATAR PER A QUE QUANT TINGA QUE BORRAR UNA PORTA DE MES D'UN QUBIT MODIFIQUE EL ESTAT CORRECTAMENT
-    LES PORTES D'UN QUBIT LES BORRA PERFECTAMENT
-    siguent A una matriu A*inv(A) = inv(A)*A = I """
 #Eliminar l'ulitma porta introduida en el qubit assignat
 function eliminar(c::QCircuit, qubit)
     comprovar = 0
     iter = 1
     porta = 0
-    while comprovar == 0
+    while comprovar == 0 && iter <= c.registre.nQubits
+        @assert c.qubit[string("qubit[",iter,"]")][length(c.qubit["qubit[1]"])] != "M" "No se pot eliminar una vegada has realitzat la mesura del qubit"
+        @assert c.qubit[string("qubit[",iter,"]")][length(c.qubit["qubit[1]"])] != "⊕" "No se pot eliminar"
+        @assert c.qubit[string("qubit[",iter,"]")][length(c.qubit["qubit[1]"])] != "⊗" "No se pot eliminar"
+        @assert c.qubit[string("qubit[",iter,"]")][length(c.qubit["qubit[1]"])] != "✕" "No se pot eliminar"
         if c.qubit[string("qubit[",1,"]")][length(c.qubit["qubit[1]"])] == arrayPortes[iter].nom
             porta = arrayPortes[iter]
             comprovar = 1
         end
         iter += 1
     end
+
     c.registre.registre[qubit].estat = inv(porta.matriu) * c.registre.registre[qubit].estat
     calcRegistre(c)
     for k in 1:c.registre.nQubits
@@ -113,10 +117,11 @@ function calcRegistre(c::QCircuit)
     aux = c.registre.registre[1].estat
     for i in 2:c.registre.nQubits
         aux = kron(c.registre.registre[i].estat, aux)
+
     end
     #Per a redondejar, la primera volta que entra aumenta un poc el temps comparat en les atres voltes
     for j in 1:length(aux)
-        aux[j]=round(aux[j], digits=4)
+        aux[j] = round(aux[j], digits = 4)
     end
     c.registre.estat = aux
 end
@@ -148,6 +153,8 @@ function dibuixarCircuit(c::QCircuit, porta::QPorta, qubits)
             elseif num == qubits[3]
                 push!(c.qubit[valorsKey[num]], porta.nom)
             elseif num > qubits[1] && num < qubits[2]
+                push!(c.qubit[valorsKey[num]], " ")
+            elseif num > qubits[2] && num < qubits[3]
                 push!(c.qubit[valorsKey[num]], " ")
             else
                 push!(c.qubit[valorsKey[num]], "-")
